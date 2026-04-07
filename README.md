@@ -1,4 +1,4 @@
-# Intelligent-Resume-Screening-System
+# Intelligent Resume Screening System
 
 **Live App:** https://intelligent-resume-screening-system.streamlit.app/
 
