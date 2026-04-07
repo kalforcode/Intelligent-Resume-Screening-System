@@ -313,7 +313,9 @@ def generate_excel(results):
 
 st.markdown("""
 <div class="ats-header">
-    <p class="ats-title">Intelligent Resume Screening System</p>
+    <p class="ats-title" style="font-size: 48px;">
+    Intelligent Resume Screening System
+</p>
     <p class="ats-subtitle">Automating Resume Analysis for Faster, Data-Driven Hiring</p>
 </div>
 """, unsafe_allow_html=True)
