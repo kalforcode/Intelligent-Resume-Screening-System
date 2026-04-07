@@ -313,8 +313,8 @@ def generate_excel(results):
 
 st.markdown("""
 <div class="ats-header">
-    <p class="ats-title">Resume Screening</p>
-    <p class="ats-subtitle">Applicant Tracking System</p>
+    <p class="ats-title">Intelligent Resume Screening System/p>
+    <p class="ats-subtitle">Automating Resume Analysis for Faster, Data-Driven Hiring/p>
 </div>
 """, unsafe_allow_html=True)
 
