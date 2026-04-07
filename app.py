@@ -5,7 +5,6 @@ import os
 import io
 from main import process_candidates
 
-
 st.set_page_config(
     page_title="ATS Resume Screener",
     layout="wide",
@@ -19,11 +18,9 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
 }
-
 .stApp {
     background-color: #F7F5F0;
 }
-
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 2.5rem 3rem; max-width: 1100px; }
 
@@ -48,7 +45,6 @@ html, body, [class*="css"] {
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
-
 .section-label {
     font-size: 0.72rem;
     font-weight: 600;
@@ -82,6 +78,32 @@ html, body, [class*="css"] {
 [data-testid="stFileUploader"]:hover {
     border-color: #1C1C1C;
 }
+[data-testid="stFileUploaderFile"] {
+    background: #F0EDE8 !important;
+    border: 1px solid #E0DDD8 !important;
+    border-radius: 3px !important;
+    padding: 0.4rem 0.7rem !important;
+    margin-top: 0.4rem !important;
+}
+[data-testid="stFileUploaderFileName"] {
+    color: #1C1C1C !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+[data-testid="stFileUploaderFileData"] {
+    color: #777 !important;
+    font-size: 0.75rem !important;
+}
+[data-testid="stFileUploaderDeleteBtn"] button {
+    color: #999 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+[data-testid="stFileUploaderDeleteBtn"] button:hover {
+    color: #1C1C1C !important;
+    background: transparent !important;
+}
 
 .stButton > button {
     background: #1C1C1C !important;
@@ -99,7 +121,6 @@ html, body, [class*="css"] {
 .stButton > button:hover {
     background: #333 !important;
 }
-
 .stDownloadButton > button {
     background: transparent !important;
     color: #1C1C1C !important;
@@ -285,13 +306,11 @@ def generate_excel(results):
         wb.save(output)
         output.seek(0)
         return output
-
     except Exception as e:
         print(f"Excel generation error: {e}")
         return None
 
 
-# ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="ats-header">
     <p class="ats-title">Resume Screening</p>
@@ -299,7 +318,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Inputs ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns([3, 2], gap="large")
 
 with col1:
@@ -329,7 +347,6 @@ with col2:
 st.markdown("<br>", unsafe_allow_html=True)
 run_btn = st.button("Run Analysis")
 
-# ── Results ───────────────────────────────────────────────────────────────────
 if run_btn:
     if not jd or not jd.strip():
         st.warning("Please enter a job description.")
@@ -358,11 +375,13 @@ if run_btn:
         else:
             st.markdown("<br>", unsafe_allow_html=True)
             dl_col, count_col = st.columns([1, 3])
+
             with count_col:
                 st.markdown(
                     f'<div class="result-count">{len(results)} candidate{"s" if len(results) > 1 else ""} screened</div>',
                     unsafe_allow_html=True
                 )
+
             with dl_col:
                 excel_data = generate_excel(results)
                 if excel_data:
@@ -417,8 +436,6 @@ if run_btn:
 </div>
 """, unsafe_allow_html=True)
 
-
-# ── Footer ────────────────────────────────────────────────────────────────────
 components.html("""
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -477,23 +494,14 @@ components.html("""
       letter-spacing: 0.3px;
   }
 </style>
-
 <div class="ats-footer">
   <p class="footer-label">Built by</p>
   <p class="footer-name">Kalpanasingh Chauhan</p>
   <div class="footer-links">
-    <a class="footer-link" href="mailto:chauhankalpana2020@gmail.com">
-      📧 chauhankalpana2020@gmail.com
-    </a>
-    <a class="footer-link" href="tel:+918850159663">
-      📞 +91 88501 59663
-    </a>
-    <a class="footer-link" href="https://www.linkedin.com/in/kalpanasingh-chauhan" target="_blank">
-      💼 LinkedIn
-    </a>
-    <a class="footer-link" href="https://github.com/kalforcode/Intelligent-Resume-Screening-System" target="_blank">
-      🐙 GitHub
-    </a>
+    <a class="footer-link" href="mailto:chauhankalpana2020@gmail.com">📧 chauhankalpana2020@gmail.com</a>
+    <a class="footer-link" href="tel:+918850159663">📞 +91 88501 59663</a>
+    <a class="footer-link" href="https://www.linkedin.com/in/kalpanasingh-chauhan" target="_blank">💼 LinkedIn</a>
+    <a class="footer-link" href="https://github.com/kalforcode/Intelligent-Resume-Screening-System" target="_blank">🐙 GitHub</a>
   </div>
   <p class="footer-copy">Intelligent Resume Screening System · Kalpanasingh Chauhan · 2025</p>
 </div>
