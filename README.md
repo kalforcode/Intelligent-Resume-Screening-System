@@ -185,5 +185,4 @@ After running the system, the application provides:
 ---
 ## License
 
-This project is licensed under the MIT License.
-It allows others to use, modify, and distribute the project with proper attribution.
+Released under the MIT License, enabling open use, modification, and distribution with attribution.
