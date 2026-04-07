@@ -20,9 +20,11 @@ The system extracts structured information from resumes, calculates total experi
 - Candidate scoring and ranking
 - Excel report generation for candidates
 - Web interface built using Streamlit
-- Robust error handling
 
 ---
+
+<img width="2752" height="1536" alt="Intelligent-Resume-Screening-System-Flow" src="https://github.com/user-attachments/assets/93f1be67-38f6-446c-9f14-b2bd3d55e980" />
+
 
 ## Workflow
 
