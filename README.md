@@ -1,6 +1,6 @@
 # Intelligent-Resume-Screening-System
 
-A resume screening system with automated candidate ranking and reporting.
+A resume screening system that analyzes resumes against a job description, ranks candidates based on relevance, and generates structured reports.
 
 ## Overview
 
