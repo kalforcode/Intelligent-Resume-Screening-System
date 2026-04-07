@@ -39,56 +39,21 @@ The system extracts structured information from resumes, calculates total experi
 ---
 System Flow
 
-================================================================================
-                    INTELLIGENT RESUME SCREENING SYSTEM ARCHITECTURE
-================================================================================
-       |
-       ▼
-+---------------+
-| Input Sources | (Resume PDFs, Job Desc.)
-+---------------+
-       |
-       ▼
-+---------------+
-| Text Extraction| (PDF to text, raw JD)
-+---------------+
-       |
-       ▼
-       +-------------------------------+------------------------------+
-       |                               |                              |
-       ▼                               ▼                              ▼
-[ RESUME CHUNKING ]         [ Job Description ]          [ RESUME PARSING ]
-   (Split text)               (NO chunking)               (Extract Name, Skills,
-   |                             |                        Summary via LLM)
-   ▼                             |                              |
-[ Embedding Model ]         [ Embedding Model ]                |
-   (Sentence-Transformers       (Sentence-Transformers         [ Experience Calc ]
-    MiniLM vectors)              MiniLM vectors)               (Date parsing)
-   |                             |                              |
-   |                             |                              |
-   ▼                             ▼                              |
-   +--------------+----------------+                              |
-                  |                                              |
-                  ▼                                              |
-        (VECTOR SPACE SEMANTIC MATCHING)                         |
-                  |                                              |
-                  ▼                                              |
-      [ COSINE SIMILARITY ENGINE ]                               |
-      (HuggingFace Embeddings)                                   |
-                  |                                              |
-                  ▼                                              |
-          [ TOP-K MATCHING ]                                     |
-          (Aggregate similarity scores)                          |
-                  |                                              |
-                  ▼                                              |
-          [ CANDIDATE RANKING ] <--------------------------------+
-          (Rank by aggreg. scores AND parsed data)
-                  |
-                  ▼
-          [ STREAMLIT WEB APPLICATION ]
-          (Upload, Display, Score Bars, skills, etc.)
-                  |
-                  ▼
-          [ EXCEL REPORT EXPORT ]
-          (Downloadable .xlsx report)
-================================================================================
+Input Sources
+   ↓
+Text Extraction
+   ├── Resume Parsing (LLM + Experience Calculation)
+   └── Resume Chunking → Resume Embeddings
+       + Job Description → JD Embedding
+             ↓
+       Cosine Similarity
+             ↓
+       Top-K Matching
+             ↓
+       Score Aggregation
+             ↓
+       Candidate Ranking
+             ↓
+       Streamlit UI
+             ↓
+       Excel Export
