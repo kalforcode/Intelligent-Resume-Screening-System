@@ -13,8 +13,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from huggingface_hub import InferenceClient
 
-# EMBEDDINGS
-
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
@@ -23,15 +21,9 @@ splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
     chunk_overlap=50
 )
-# HF CLIENT
 
-import os
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-
 hf_client = InferenceClient(token=HF_TOKEN)
-
-
-# EXPERIENCE CALCULATOR 
 
 PRESENT = datetime(2026, 4, 1)
 
@@ -64,57 +56,55 @@ def parse_date(s: str):
 
 def calculate_experience(text: str) -> str:
     try:
-        # Split text into lines for context-aware parsing
         lines = text.split('\n')
-        
-        # Keywords that indicate we're in a work experience section
+
         WORK_SECTION_KEYWORDS = [
-            'experience', 'employment', 'work history', 'career',
-            'internship', 'intern', 'position', 'job'
-        ]
-        
-        # Keywords that indicate we've left work section
-        STOP_SECTION_KEYWORDS = [
-            'education', 'project', 'certification', 'achievement',
-            'award', 'publication', 'skill', 'volunteer', 'course'
+            'professional experience', 'work experience', 'employment history',
+            'career history', 'internship experience', 'work history', 'experience'
         ]
 
-        # Extract only lines that are in work experience sections
+        STOP_SECTION_KEYWORDS = [
+            'education', 'certifications', 'achievements', 'awards',
+            'publications', 'skills', 'volunteer', 'courses', 'projects'
+        ]
+
         work_lines = []
         in_work_section = False
 
         for line in lines:
-            line_lower = line.strip().lower()
+            stripped = line.strip()
+            line_lower = stripped.lower()
 
-
-            if any(kw in line_lower for kw in WORK_SECTION_KEYWORDS):
+            if any(kw == line_lower or line_lower.startswith(kw) for kw in WORK_SECTION_KEYWORDS):
                 in_work_section = True
                 continue
 
-            # Check if this line starts a non-work section
-            if any(kw in line_lower for kw in STOP_SECTION_KEYWORDS):
-                in_work_section = False
+            if any(kw == line_lower or line_lower.startswith(kw) for kw in STOP_SECTION_KEYWORDS):
+                if in_work_section:
+                    in_work_section = False
                 continue
 
-            if in_work_section and line.strip():
-                work_lines.append(line)
+            if in_work_section and stripped:
+                work_lines.append(stripped)
 
         work_text = '\n'.join(work_lines)
         print(f"WORK SECTION TEXT:\n{work_text}\n---")
 
         if not work_text.strip():
-            return "N/A"
+            work_text = text
 
-        pattern = (
-            r'([A-Za-z]+\.?\s+\d{4}|\d{1,2}[/-]\d{4})'
-            r'\s*[–\-—]+\s*'
-            r'([A-Za-z]+\.?\s+\d{4}|\d{1,2}[/-]\d{4}|[Pp]resent|[Cc]urrent|[Nn]ow)'
-        )
+        # Pattern handles regular dash, en-dash (–), em-dash (—), and unicode variants
+        date_part = r'([A-Za-z]+\.?\s+\d{4}|\d{1,2}[/-]\d{4}|\d{4})'
+        sep = r'\s*[\u2013\u2014\-\–\—]+\s*'
+        end_part = r'([A-Za-z]+\.?\s+\d{4}|\d{1,2}[/-]\d{4}|\d{4}|[Pp]resent|[Cc]urrent|[Nn]ow)'
+        pattern = date_part + sep + end_part
+
         matches = re.findall(pattern, work_text)
+        print(f"DATE MATCHES: {matches}")
 
         total_months = 0
         periods = []
-        seen = set()  # avoid double counting
+        seen = set()
 
         for start_str, end_str in matches:
             key = (start_str.strip().lower(), end_str.strip().lower())
@@ -149,7 +139,6 @@ def calculate_experience(text: str) -> str:
         print(f"calculate_experience ERROR: {e}")
         return "N/A"
 
-# LOAD RESUME
 
 def load_resume(file_path: str) -> str:
     try:
@@ -161,8 +150,7 @@ def load_resume(file_path: str) -> str:
     except Exception as e:
         print(f"load_resume ERROR: {e}")
         return ""
-    
-# RESUME PARSING
+
 
 def parse_resume_hf(text: str) -> Dict:
     prompt = f"""You are an expert HR resume parser.
@@ -194,7 +182,6 @@ Resume:
     raw = response.choices[0].message.content.strip()
     print(f"HF RAW RESPONSE:\n{raw}")
 
-    # Strip markdown fences if present
     raw = re.sub(r'```json|```', '', raw).strip()
 
     match = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -202,39 +189,6 @@ Resume:
         return json.loads(match.group())
     raise ValueError(f"No valid JSON in response: {raw[:200]}")
 
-# import ollama
-# def parse_resume_ollama(text: str) -> Dict:
-#     prompt = f"""You are an expert HR resume parser.
-# Read the resume below and return ONLY a valid JSON object with exactly these keys:
-#
-# {{
-#   "name": "Full name of the candidate, or Unknown if not found",
-#   "skills": ["skill1", "skill2", "...all technical and soft skills as array"],
-#   "education": "Highest qualification and institute name, or N/A",
-#   "summary": "A concise 3-5 sentence professional summary covering background, key skills, notable achievements, and career focus"
-# }}
-#
-# Rules:
-# - Return ONLY the JSON object
-# - No markdown, no backticks, no explanation
-# - skills must be an array of strings
-# - summary must be a proper paragraph, not bullet points
-#
-# Resume:
-# {text[:4000]}"""
-#
-#     response = ollama.chat(
-#         model="mistral",
-#         messages=[{"role": "user", "content": prompt}]
-#     )
-#     raw = response["message"]["content"].strip()
-#     raw = re.sub(r'```json|```', '', raw).strip()
-#     match = re.search(r'\{.*\}', raw, re.DOTALL)
-#     if match:
-#         return json.loads(match.group())
-#     raise ValueError(f"No valid JSON in response: {raw[:200]}")
-
-# PARSE RESUME - MAIN
 
 def parse_resume(text: str) -> Dict:
     fallback = {
@@ -254,7 +208,6 @@ def parse_resume(text: str) -> Dict:
 
     try:
         parsed = parse_resume_hf(text)
-        # parsed = parse_resume_ollama(text)
 
         skills = parsed.get("skills", [])
         if isinstance(skills, str):
@@ -276,7 +229,6 @@ def parse_resume(text: str) -> Dict:
         fallback["experience"] = experience
         return fallback
 
-# COSINE SIMILARITY
 
 def compute_similarity(jd: str, resume_text: str) -> float:
     try:
@@ -303,7 +255,6 @@ def compute_similarity(jd: str, resume_text: str) -> float:
         print(f"compute_similarity ERROR: {e}")
         return 0.0
 
-# MAIN PIPELINE
 
 def process_candidates(files: List[str], jd: str) -> List[Dict]:
     results = []
