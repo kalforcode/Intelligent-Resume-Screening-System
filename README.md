@@ -1,5 +1,7 @@
 # Intelligent-Resume-Screening-System
 
+**Live App:** https://intelligent-resume-screening-system.streamlit.app/
+
 A resume screening system that analyzes resumes against a job description, ranks candidates based on relevance, and generates structured reports.
 
 ## Overview
