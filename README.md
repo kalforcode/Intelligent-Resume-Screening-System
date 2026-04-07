@@ -38,22 +38,80 @@ The system extracts structured information from resumes, calculates total experi
 
 ---
 System Flow
+---
 
-Input Sources
-   ↓
-Text Extraction
-   ├── Resume Parsing (LLM + Experience Calculation)
-   └── Resume Chunking → Resume Embeddings
-       + Job Description → JD Embedding
-             ↓
-       Cosine Similarity
-             ↓
-       Top-K Matching
-             ↓
-       Score Aggregation
-             ↓
-       Candidate Ranking
-             ↓
-       Streamlit UI
-             ↓
-       Excel Export
+## System Flow
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│       INTELLIGENT RESUME SCREENING SYSTEM ARCHITECTURE       │
+└──────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+          ┌───────────────────────────┐
+          │      INPUT SOURCES        │
+          │ (Resume PDFs + Job Desc)  │
+          └─────────────┬─────────────┘
+                        │
+                        ▼
+          ┌───────────────────────────┐
+          │      TEXT EXTRACTION      │
+          └─────────────┬─────────────┘
+
+     ┌──────────────────┼──────────────────┐
+     ▼                  ▼                  ▼
+
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│ RESUME       │  │ JOB          │  │ RESUME       │
+│ CHUNKING     │  │ DESCRIPTION  │  │ PARSING      │
+│ (split text) │  │ (raw text)   │  │ (LLM extract)│
+└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+       ▼                  ▼                 ▼
+
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│ RESUME       │  │ JD           │  │ EXPERIENCE   │
+│ EMBEDDINGS   │  │ EMBEDDING    │  │ CALCULATION  │
+│ (MiniLM)     │  │ (MiniLM)     │  │ (dates)      │
+└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+       │                  │                 │
+       └──────────┬───────┴──────────┬──────┘
+                  ▼                  ▼
+
+        ┌──────────────────────────────┐
+        │   COSINE SIMILARITY ENGINE   │
+        │ (semantic matching + top-k)  │
+        └──────────────┬───────────────┘
+                       │
+                       ▼
+
+        ┌──────────────────────────────┐
+        │     CANDIDATE RANKING        │
+        │ (score aggregation)          │
+        └──────────────┬───────────────┘
+                       │
+                       ▼
+
+        ┌──────────────────────────────┐
+        │   STREAMLIT WEB INTERFACE    │
+        └──────────────┬───────────────┘
+                       │
+                       ▼
+
+        ┌──────────────────────────────┐
+        │     EXCEL REPORT EXPORT      │
+        └──────────────────────────────┘
+```
+
+## How it Works
+
+•	Resumes are split into smaller chunks to capture detailed context
+
+•	Each chunk is converted into a vector using a transformer-based embedding model
+
+•	The job description is converted into a single embedding
+
+•	Cosine similarity is computed between the job description and each resume chunk
+
+•	The top matching sections are selected and averaged to generate a final score
+
+•	Candidates are ranked based on this score
