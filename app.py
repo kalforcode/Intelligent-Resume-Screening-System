@@ -1,11 +1,10 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import tempfile
 import os
 import io
 from main import process_candidates
 
-
-# PAGE CONFIG
 
 st.set_page_config(
     page_title="ATS Resume Screener",
@@ -13,13 +12,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CUSTOM CSS
-
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* Reset & Base */
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
 }
@@ -28,11 +24,9 @@ html, body, [class*="css"] {
     background-color: #F7F5F0;
 }
 
-/* Hide streamlit default elements */
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 2.5rem 3rem; max-width: 1100px; }
 
-/* Header */
 .ats-header {
     border-bottom: 2px solid #1C1C1C;
     padding-bottom: 1.5rem;
@@ -55,7 +49,6 @@ html, body, [class*="css"] {
     text-transform: uppercase;
 }
 
-/* Section labels */
 .section-label {
     font-size: 0.72rem;
     font-weight: 600;
@@ -65,7 +58,6 @@ html, body, [class*="css"] {
     margin-bottom: 0.5rem;
 }
 
-/* Input styling */
 .stTextArea textarea {
     background: #fff !important;
     border: 1.5px solid #E0DDD8 !important;
@@ -81,7 +73,6 @@ html, body, [class*="css"] {
     box-shadow: none !important;
 }
 
-/* File uploader */
 [data-testid="stFileUploader"] {
     background: #fff;
     border: 1.5px dashed #C8C4BE;
@@ -92,7 +83,6 @@ html, body, [class*="css"] {
     border-color: #1C1C1C;
 }
 
-/* Button */
 .stButton > button {
     background: #1C1C1C !important;
     color: #F7F5F0 !important;
@@ -110,7 +100,6 @@ html, body, [class*="css"] {
     background: #333 !important;
 }
 
-/* Download button */
 .stDownloadButton > button {
     background: transparent !important;
     color: #1C1C1C !important;
@@ -127,7 +116,6 @@ html, body, [class*="css"] {
     color: #F7F5F0 !important;
 }
 
-/* Candidate card */
 .candidate-card {
     background: #fff;
     border: 1.5px solid #E0DDD8;
@@ -224,14 +212,6 @@ html, body, [class*="css"] {
     border-top: 1px solid #E0DDD8;
     margin: 1.2rem 0;
 }
-.result-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid #E0DDD8;
-}
 .result-count {
     font-family: 'DM Serif Display', serif;
     font-size: 1.1rem;
@@ -240,7 +220,6 @@ html, body, [class*="css"] {
 </style>
 """, unsafe_allow_html=True)
 
-# EXCEL EXPORT
 
 def generate_excel(results):
     try:
@@ -252,7 +231,6 @@ def generate_excel(results):
         ws = wb.active
         ws.title = "Candidate Report"
 
-        # Header row styling
         header_font = Font(name="Arial", bold=True, color="FFFFFF", size=10)
         header_fill = PatternFill("solid", start_color="1C1C1C")
         header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
@@ -276,7 +254,6 @@ def generate_excel(results):
 
         ws.row_dimensions[1].height = 30
 
-        # Data rows
         alt_fill = PatternFill("solid", start_color="F7F5F0")
         data_font = Font(name="Arial", size=10)
         data_align = Alignment(vertical="top", wrap_text=True)
@@ -299,10 +276,8 @@ def generate_excel(results):
                 cell.border = thin_border
                 if row_idx % 2 == 0:
                     cell.fill = alt_fill
-
             ws.row_dimensions[row_idx].height = 60
 
-        # Score column number format
         for row_idx in range(2, len(results) + 2):
             ws.cell(row=row_idx, column=3).number_format = '0.00"%"'
 
@@ -315,15 +290,16 @@ def generate_excel(results):
         print(f"Excel generation error: {e}")
         return None
 
-# UI
 
+# ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="ats-header">
     <p class="ats-title">Resume Screening</p>
-    <p class="ats-subtitle">Applicant Tracking System &nbsp;&middot;&nbsp;</p>
+    <p class="ats-subtitle">Applicant Tracking System</p>
 </div>
 """, unsafe_allow_html=True)
 
+# ── Inputs ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns([3, 2], gap="large")
 
 with col1:
@@ -353,8 +329,7 @@ with col2:
 st.markdown("<br>", unsafe_allow_html=True)
 run_btn = st.button("Run Analysis")
 
-# RESULTS
-
+# ── Results ───────────────────────────────────────────────────────────────────
 if run_btn:
     if not jd or not jd.strip():
         st.warning("Please enter a job description.")
@@ -441,3 +416,85 @@ if run_btn:
     <div class="skills-wrap">{skills_html}</div>
 </div>
 """, unsafe_allow_html=True)
+
+
+# ── Footer ────────────────────────────────────────────────────────────────────
+components.html("""
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; font-family: 'DM Sans', sans-serif; }
+  .ats-footer {
+      padding-top: 1.8rem;
+      border-top: 2px solid #1C1C1C;
+  }
+  .footer-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 0.4rem;
+  }
+  .footer-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: #1C1C1C;
+      margin-bottom: 1.2rem;
+      line-height: 1.1;
+  }
+  .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1.6rem;
+  }
+  .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      color: #1C1C1C;
+      font-size: 0.83rem;
+      font-weight: 500;
+      padding: 0.42rem 0.9rem;
+      border: 1.5px solid #E0DDD8;
+      border-radius: 3px;
+      background: #fff;
+      transition: all 0.18s ease;
+      letter-spacing: 0.1px;
+  }
+  .footer-link:hover {
+      border-color: #1C1C1C;
+      background: #1C1C1C;
+      color: #F7F5F0;
+  }
+  .footer-copy {
+      font-size: 0.72rem;
+      color: #bbb;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+  }
+</style>
+
+<div class="ats-footer">
+  <p class="footer-label">Built by</p>
+  <p class="footer-name">Kalpanasingh Chauhan</p>
+  <div class="footer-links">
+    <a class="footer-link" href="mailto:chauhankalpana2020@gmail.com">
+      📧 chauhankalpana2020@gmail.com
+    </a>
+    <a class="footer-link" href="tel:+918850159663">
+      📞 +91 88501 59663
+    </a>
+    <a class="footer-link" href="https://www.linkedin.com/in/kalpanasingh-chauhan" target="_blank">
+      💼 LinkedIn
+    </a>
+    <a class="footer-link" href="https://github.com/kalforcode/Intelligent-Resume-Screening-System" target="_blank">
+      🐙 GitHub
+    </a>
+  </div>
+  <p class="footer-copy">Intelligent Resume Screening System · Kalpanasingh Chauhan · 2025</p>
+</div>
+""", height=180)
