@@ -37,9 +37,6 @@ The system extracts structured information from resumes, calculates total experi
 9. Export results as Excel report  
 
 ---
-System Flow
----
-
 ## System Flow
 
 ```
@@ -101,17 +98,92 @@ System Flow
         │     EXCEL REPORT EXPORT      │
         └──────────────────────────────┘
 ```
+---
 
 ## How it Works
 
-•	Resumes are split into smaller chunks to capture detailed context
+-	Resumes are split into smaller chunks to capture detailed context
+-	Each chunk is converted into a vector using a transformer-based embedding model
+- The job description is converted into a single embedding
+-	Cosine similarity is computed between the job description and each resume chunk
+-	The top matching sections are selected and averaged to generate a final score
+-	Candidates are ranked based on this score
 
-•	Each chunk is converted into a vector using a transformer-based embedding model
 
-•	The job description is converted into a single embedding
+---
 
-•	Cosine similarity is computed between the job description and each resume chunk
+## Tech Stack
 
-•	The top matching sections are selected and averaged to generate a final score
+- Python
+- LangChain
+- HuggingFace Embeddings
+- Sentence Transformers (all-MiniLM-L6-v2)
+- NumPy
+- Scikit-learn
+- Streamlit
+- OpenPyXL
+- Regex
 
-•	Candidates are ranked based on this score
+---
+
+## Similarity Method
+
+- Resume is divided into smaller sections (chunks)
+- Each section is converted into embeddings
+- Job description is also converted into embeddings
+- Cosine similarity is computed between job description and each section
+- Top matching sections are selected
+- Final score is calculated as the average of top matches
+
+---
+
+## Running the Project
+1. Clone the Repository
+```
+git clone https://github.com/your-username/Intelligent-Resume-Screening-System.git
+cd Intelligent-Resume-Screening-System
+```
+
+3. Install Dependencies
+```
+pip install -r requirements.txt
+```
+
+5. Configure Environment
+Create a .env file in the root directory and add:
+```
+HF_TOKEN=your_huggingface_token
+```
+5. Run the Application
+```
+streamlit run app.py
+```
+
+---
+## Output
+
+After running the system, the application provides:
+
+- Ranked list of candidates based on relevance to the job description 
+- Match score (percentage) for each candidate 
+- Extracted skills from resumes 
+-	Work experience calculated from date ranges 
+- Education details 
+- Generated professional summary 
+- Downloadable Excel report directly from the Streamlit interface 
+
+---
+## Future Improvements
+
+- Integration of an HR chatbot for interacting with candidate insights 
+- Candidate-side chatbot to evaluate and match skills with job descriptions 
+- Fully automated recruitment workflow for HR teams 
+-	Support for additional file formats such as DOCX and TXT 
+- Advanced filtering, sorting, and search features in the UI 
+
+
+---
+## License
+
+This project is licensed under the MIT License.
+It allows others to use, modify, and distribute the project with proper attribution.
