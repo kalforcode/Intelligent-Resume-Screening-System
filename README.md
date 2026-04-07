@@ -27,6 +27,7 @@ The system extracts structured information from resumes, calculates total experi
 
 <img width="2752" height="1536" alt="Intelligent-Resume-Screening-System-Flow" src="https://github.com/user-attachments/assets/93f1be67-38f6-446c-9f14-b2bd3d55e980" />
 
+---
 
 ## Workflow
 
