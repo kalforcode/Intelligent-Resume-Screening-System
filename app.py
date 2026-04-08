@@ -502,7 +502,7 @@ components.html("""
   <div class="footer-links">
     <a class="footer-link" href="mailto:chauhankalpana2020@gmail.com">📧 chauhankalpana2020@gmail.com</a>
     <a class="footer-link" href="tel:+918850159663">📞 +91 88501 59663</a>
-    <a class="footer-link" href="https://www.linkedin.com/in/kalpanasingh-chauhan" target="_blank">💼 LinkedIn</a>
+    <a class="footer-link" href="https://www.linkedin.com/in/kalpana-chauhan/" target="_blank">💼 LinkedIn</a>
     <a class="footer-link" href="https://github.com/kalforcode/Intelligent-Resume-Screening-System" target="_blank">🐙 GitHub</a>
   </div>
   <p class="footer-copy">Intelligent Resume Screening System · Kalpanasingh Chauhan · 2025</p>
